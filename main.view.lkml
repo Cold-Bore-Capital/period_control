@@ -337,7 +337,6 @@ view: main {
     # use contains a time, then the parameter should be set to yes.
     hidden: yes
     type: date_raw
-    convert_tz: no
     sql:
       {%- if convert_tz._parameter_value == 'true' -%}
         {%- case '@{database_type}' -%}
@@ -375,7 +374,6 @@ view: main {
       {%- when "bigquery" %} datetime(current_timestamp())
       {%- endcase -%}
       {%- endif -%};;
-    convert_tz: no
   }
 
   dimension: end_date_dim_as_of_mod {
@@ -406,7 +404,6 @@ view: main {
       {%- endcase %}
 
       {%- endif -%};;
-    convert_tz: no
   }
 
   dimension: end_date_dim {
@@ -415,7 +412,6 @@ view: main {
     #
     # @todo: Will convert_timezone always be needed on the max origin date function?
     type: date_raw
-    convert_tz: no
     hidden:  yes
     sql:{%- if period_selection._parameter_value == 'lw' or period_selection._parameter_value == 'lm'
                or period_selection._parameter_value == 'lq' or period_selection._parameter_value == 'ly' -%}
@@ -617,7 +613,6 @@ view: main {
     #   1. The else case handles trailing selection
     hidden: yes
     type: date_raw
-    convert_tz: no
     sql:
         {%- case period_selection._parameter_value -%}
             {%- when 'wtd' -%}
