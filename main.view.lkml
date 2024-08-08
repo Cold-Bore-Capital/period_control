@@ -337,6 +337,7 @@ view: main {
     # use contains a time, then the parameter should be set to yes.
     #rehide
     hidden: no
+    view_label: "unhidden"
     type: date_raw
     sql:
       {%- if convert_tz._parameter_value == 'true' -%}
@@ -359,6 +360,7 @@ view: main {
     # current date. The current_date function from Redshift can't be used here as timezone conversions on a date only data type result in really bad stuff.
     #rehide
     hidden: no
+    view_label: "unhidden"
     type: date_raw
     sql:
     {%- if _query._query_timezone != '@{database_time_zone}' -%}
@@ -390,6 +392,7 @@ view: main {
     # Note, if exclude days is used, no modification of seconds is made. This will be handled in the end_date_dim dimension.
     #rehide
     hidden: no
+    view_label: "unhidden"
     type: date_raw
     sql:
       {%- if as_of_date._parameter_value == 'NULL' and exclude_days._parameter_value == '0' -%}
@@ -417,6 +420,7 @@ view: main {
     type: date_raw
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql:{%- if period_selection._parameter_value == 'lw' or period_selection._parameter_value == 'lm'
                or period_selection._parameter_value == 'lq' or period_selection._parameter_value == 'ly' -%}
             {%- case period_selection._parameter_value -%}
@@ -520,6 +524,7 @@ view: main {
 
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql:
     {%- if convert_tz._parameter_value == 'true' -%}
       {%- case '@{database_type}' -%}
@@ -540,6 +545,7 @@ view: main {
     # and a day is added to the start date.
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql:
       {%- if as_of_date._parameter_value == 'NULL' -%}
           {%- if period_selection._parameter_value == 'trailing' -%}
@@ -575,6 +581,7 @@ view: main {
     # @todo NEED TO TEST THE LAST FULL WEEK, MONTH, SO ON PART OF THIS.
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql: {%- if as_of_date._parameter_value == 'NULL' and exclude_days._parameter_value != '0' -%}
             {%- case exclude_days._parameter_value -%}
              {%- when "last_data_future" or "last_data_max_today" -%}
@@ -620,6 +627,7 @@ view: main {
     #   1. The else case handles trailing selection
     #rehide
     hidden: no
+    view_label: "unhidden"
     type: date_raw
     sql:
         {%- case period_selection._parameter_value -%}
@@ -694,6 +702,7 @@ view: main {
   dimension: period_name_selection {
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql: {%- case period_selection._parameter_value -%}
               {%- when "trailing" -%} 'Period'
               {%- when "wtd" or "lw" -%} 'Week'
@@ -962,6 +971,7 @@ view: main {
     # displays human readable form such as "Last Month" or "Prior Period".
     #rehide
     hidden: no
+    view_label: "unhidden"
     type: number
     sql:
         {%- assign _period_selection = period_selection._parameter_value -%}
@@ -1046,6 +1056,7 @@ view: main {
     type: string
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql:
         {%- assign _range_size = size_of_range._parameter_value | times: 1 -%}
         {%- assign _range_start = _range_size | times: 1 -%}
@@ -1074,6 +1085,7 @@ view: main {
     # to display the X-Axis in a relative 1, 2, 3 output instead of dates.
     #rehide
     hidden: no
+    view_label: "unhidden"
     description: "Gives the number of days since the start of each periods. Use this to align the event dates onto the same axis, the axes will read 1,2,3, etc."
     type: number
     sql:
@@ -1330,6 +1342,7 @@ view: main {
   dimension: sql_always_where_inject {
     #rehide
     hidden: no
+    view_label: "unhidden"
     sql:
         {%- assign _period_selection = period_selection._parameter_value -%}
         {%- if _period_selection != "none" -%}
