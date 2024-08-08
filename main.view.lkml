@@ -883,7 +883,6 @@ view: main {
       # other start   dateadd('days', -{{ i | minus: 1}}*@{days_in_standard_month}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))              => dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))
       # other end     dateadd('days', -{{ i | minus: 1}}*@{days_in_standard_month}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))                  => dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
 
-      #month_calc_1
       {%- when 'prior_month' %}
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
@@ -906,7 +905,6 @@ view: main {
 
       {%- endif %} || ')'
       {%- endif -%}
-      #month_calc_1 end
 
       {%- when 'prior_quarter' %}
       when ${event_date_tz_convert} between
