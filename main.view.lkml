@@ -335,7 +335,8 @@ view: main {
     #
     # Within the consuming view, there is a parameter named "convert_tz". If the date in use is only a date, this must be set to "no". If the date in
     # use contains a time, then the parameter should be set to yes.
-    hidden: yes
+    #rehide
+    hidden: no
     type: date_raw
     sql:
       {%- if convert_tz._parameter_value == 'true' -%}
@@ -356,7 +357,8 @@ view: main {
     #
     # It's important that the timezone conversion of "current date" only occurs once. This dimension is used by other dimensions to set the
     # current date. The current_date function from Redshift can't be used here as timezone conversions on a date only data type result in really bad stuff.
-    hidden: yes
+    #rehide
+    hidden: no
     type: date_raw
     sql:
     {%- if _query._query_timezone != '@{database_time_zone}' -%}
@@ -386,7 +388,8 @@ view: main {
     #    converted to 2022-01-01 23:59:59 so that the full day is included in the range.
     #
     # Note, if exclude days is used, no modification of seconds is made. This will be handled in the end_date_dim dimension.
-    hidden: yes
+    #rehide
+    hidden: no
     type: date_raw
     sql:
       {%- if as_of_date._parameter_value == 'NULL' and exclude_days._parameter_value == '0' -%}
@@ -412,7 +415,8 @@ view: main {
     #
     # @todo: Will convert_timezone always be needed on the max origin date function?
     type: date_raw
-    hidden:  yes
+    #rehide
+    hidden: no
     sql:{%- if period_selection._parameter_value == 'lw' or period_selection._parameter_value == 'lm'
                or period_selection._parameter_value == 'lq' or period_selection._parameter_value == 'ly' -%}
             {%- case period_selection._parameter_value -%}
@@ -514,7 +518,8 @@ view: main {
     # The goal here is to get an offset from current date to last data date as a number, and pass that into the date_add function. This is a bit complex, but
     # it works.
 
-    hidden: yes
+    #rehide
+    hidden: no
     sql:
     {%- if convert_tz._parameter_value == 'true' -%}
       {%- case '@{database_type}' -%}
@@ -533,7 +538,8 @@ view: main {
     # The end date used / displayed by the Looker Period Control block is inclusive. This means that while a normal date subtraction operation like date_add('days', -30, '2022-05-31') would
     # result in a date of 2022-05-01, that's not the expected outcome. In reality, the displayed date 2022-05-31 is 2022-05-31 23:59:59. To account for this, the date function is truncated,
     # and a day is added to the start date.
-    hidden: yes
+    #rehide
+    hidden: no
     sql:
       {%- if as_of_date._parameter_value == 'NULL' -%}
           {%- if period_selection._parameter_value == 'trailing' -%}
@@ -567,7 +573,8 @@ view: main {
     # Applies any exclude days offset to the start date
     #
     # @todo NEED TO TEST THE LAST FULL WEEK, MONTH, SO ON PART OF THIS.
-    hidden: yes
+    #rehide
+    hidden: no
     sql: {%- if as_of_date._parameter_value == 'NULL' and exclude_days._parameter_value != '0' -%}
             {%- case exclude_days._parameter_value -%}
              {%- when "last_data_future" or "last_data_max_today" -%}
@@ -611,7 +618,8 @@ view: main {
     #
     # Notes:
     #   1. The else case handles trailing selection
-    hidden: yes
+    #rehide
+    hidden: no
     type: date_raw
     sql:
         {%- case period_selection._parameter_value -%}
@@ -684,7 +692,8 @@ view: main {
   # *************************
 
   dimension: period_name_selection {
-    hidden: yes
+    #rehide
+    hidden: no
     sql: {%- case period_selection._parameter_value -%}
               {%- when "trailing" -%} 'Period'
               {%- when "wtd" or "lw" -%} 'Week'
@@ -951,7 +960,8 @@ view: main {
     #
     # This dimension is used to establish the proper sort order in the "period" dimension. A numeric sort is needed as the "period" dimension
     # displays human readable form such as "Last Month" or "Prior Period".
-    hidden: yes
+    #rehide
+    hidden: no
     type: number
     sql:
         {%- assign _period_selection = period_selection._parameter_value -%}
@@ -1034,7 +1044,8 @@ view: main {
 
   dimension: first_period_start_date {
     type: string
-    hidden: yes
+    #rehide
+    hidden: no
     sql:
         {%- assign _range_size = size_of_range._parameter_value | times: 1 -%}
         {%- assign _range_start = _range_size | times: 1 -%}
@@ -1061,7 +1072,8 @@ view: main {
     #
     # Used by the dimension_group "date_in_period" to calculate the date for any given grouping, this dimension can also be used
     # to display the X-Axis in a relative 1, 2, 3 output instead of dates.
-    hidden: yes
+    #rehide
+    hidden: no
     description: "Gives the number of days since the start of each periods. Use this to align the event dates onto the same axis, the axes will read 1,2,3, etc."
     type: number
     sql:
@@ -1316,7 +1328,8 @@ view: main {
   }
 
   dimension: sql_always_where_inject {
-    hidden: yes
+    #rehide
+    hidden: no
     sql:
         {%- assign _period_selection = period_selection._parameter_value -%}
         {%- if _period_selection != "none" -%}
