@@ -282,7 +282,7 @@ view: main {
     view_label: "@{period_control_group_title}"
     description: "Display the dates alongside the periods. For example 'Current Period - 2021-01-01 to 2021-04-01'. Note that this will cause any custom colors set for the series to break when the dates change (i.e. the next day)."
     type: yesno
-    default_value: "No"
+    default_value: "Yes"
   }
 
   parameter: snap_start_date_to {
