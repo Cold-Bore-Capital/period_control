@@ -866,7 +866,7 @@ view: main {
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH)
-      {%- else %} dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and last_day(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- else %} dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
       {%- endcase %}
       then '{{ _period_prefix | append: " " | append: _period_suffix }}'
 
@@ -878,15 +878,15 @@ view: main {
 
       {%- if _range_size != 1 -%}
       {%- case '@{database_type}' -%}
-      {%- when "bigquery" %} || ' to ' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH)
+      {%- when "bigquery" %} || ' to ' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH))
       {%- else %} || ' to ' || to_char(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})) , '@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}')
       {%- endcase %}
 
       {%- endif %} || ')'
       {%- endif -%}
 
-
       {%- else %}
+
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second)
@@ -896,7 +896,7 @@ view: main {
 
       {%- if display_dates_in_period_labels._parameter_value == 'true' -%}
       {%- case '@{database_type}' -%}
-      {%- when "bigquery" %} || ' (' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH))
+      {%- when "bigquery" %} || ' (' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH)
       {%- else %} || ' (' || to_char(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) , '@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}')
       {%- endcase %}
 
@@ -912,6 +912,34 @@ view: main {
 
 
       {%- when 'prior_quarter' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "qtd" %}
+
+      when ${event_date_tz_convert} between
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER)
+      {%- else %} dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))  and dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- endcase %}
+      then '{{ _period_prefix | append: " " | append: _period_suffix }}'
+      {%- if display_dates_in_period_labels._parameter_value == 'true' -%}
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} || ' (' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER))
+      {%- else %} || ' (' || to_char(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) , '@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}')
+
+      {%- endcase %}
+
+      {%- if _range_size != 1 -%}
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} || ' to ' || format_date('@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}', date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER)
+      {%- else %} || ' to ' || to_char(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})) , '@{date_display_format}{%- if show_time_in_date_display._parameter_value == 'true' %} @{time_display_format}{%- endif -%}')
+      {%- endcase %}
+
+      {%- endif -%} || ')'
+      {%- endif -%}
+
+      {%- else %}
+
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second)
@@ -933,6 +961,10 @@ view: main {
 
       {%- endif -%} || ')'
       {%- endif -%}
+
+      {%- endcase %}
+
+
 
       {%- when 'prior_year' %}
       when ${event_date_tz_convert} between
@@ -1028,6 +1060,19 @@ view: main {
       then {{i}}
 
       {%- when 'prior_month' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "mtd" %}
+
+      when ${event_date_tz_convert} between
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH)
+      {%- else %} dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- endcase %}
+      then {{i}}
+
+      {%-else %}
+
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second)
@@ -1035,12 +1080,28 @@ view: main {
       {%- endcase %}
       then {{i}}
 
+      {%- endcase %}
+
       {%- when 'prior_quarter' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "qtd" %}
+
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER)
+      {%- else %} when ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))  and dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- endcase %}
+      then {{i}}
+
+      {%- else %}
+
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second)
       {%- else %} when ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))  and dateadd('second', 86399, last_day(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'quarter'))
       {%- endcase %}
       then {{i}}
+
+      {%- endcase %}
 
       {%- when 'prior_year' %}
       {%- case '@{database_type}' -%}
@@ -1135,19 +1196,47 @@ view: main {
       {%- endcase -%}
 
       {%- when 'prior_month' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "mtd" %}
+
+      when ${event_date_tz_convert} between
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %}  date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH), ${event_date_tz_convert}, SECOND)
+      {%- else %}  dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})) then datediff('seconds',dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), ${event_date_tz_convert})
+      {%- endcase -%}
+
+      {%-else %}
+
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %}  date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH), ${event_date_tz_convert}, SECOND)
       {%- else %}  dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('second', 86399, last_day(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'months')) then datediff('seconds',dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), ${event_date_tz_convert})
       {%- endcase -%}
 
+      {%- endcase -%}
+
+
       {%- when 'prior_quarter' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "qtd" %}
+
+      when ${event_date_tz_convert} between
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER) and  date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER), ${event_date_tz_convert}, SECOND)
+      {%- else %} dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})) then datediff('seconds', dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), ${event_date_tz_convert})
+      {%- endcase -%}
+
+      {%- else %}
+      
       when ${event_date_tz_convert} between
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER) and  date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER), ${event_date_tz_convert}, SECOND)
       {%- else %} dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and  dateadd('second', 86399, last_day(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'quarter')) then datediff('seconds', dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), ${event_date_tz_convert})
       {%- endcase -%}
-
+      
+      {%- endcase -%}
 
       {%- when 'prior_year' %}
       when ${event_date_tz_convert} between
@@ -1214,17 +1303,44 @@ view: main {
       {%- endcase %}
 
       {%- when 'prior_month' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "mtd" %}
+      
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH), date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH), SECOND)
+      {%- else %} when ${event_date_tz_convert} between dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))  then datediff('seconds',dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})))
+      {%- endcase %}
+      
+      {%- else %}
+
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH), date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second), SECOND)
       {%- else %} when ${event_date_tz_convert} between dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('second', 86399, last_day(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'months')) then datediff('seconds',dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})), dateadd('second', 86399, last_day(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'months')))
       {%- endcase %}
 
+      {%- endcase %}
+
       {%- when 'prior_quarter' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "qtd" %}
+
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER), date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER), SECOND)
+      {%- else %} when ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})) then datediff('seconds', dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})),  dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})))
+      {%- endcase %}
+      
+      {%- else %} 
+
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER) and  date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER),  date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second), SECOND)
       {%- else %} when ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and  dateadd('second', 86399, last_day(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'quarter')) then datediff('seconds', dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})),  dateadd('second', 86399, last_day(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'quarter')))
       {%- endcase %}
+      
+      {%- endcase %}
 
+      
       {%- when 'prior_year' %}
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} when ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} YEAR) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} YEAR) then date_diff(date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} YEAR), date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} YEAR), SECOND)
@@ -1418,18 +1534,44 @@ view: main {
 
 
       {%- when 'prior_month' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "mtd" %}
+
+      or
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH)
+      {%- else %} ${event_date_tz_convert} between dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- endcase %}
+
+      {%- else %}
       or
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} MONTH) and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} MONTH),MONTH),86399,second)
       {%- else %} ${event_date_tz_convert} between dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim})) and dateadd('second', 86399, last_day(dateadd('months', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'months'))
       {%- endcase %}
-
+      
+      {%- endcase %}
 
       {%- when 'prior_quarter' %}
+
+      {%- case period_selection._parameter_value -%}
+      {%- when "qtd" %}
+
+      or
+      {%- case '@{database_type}' -%}
+      {%- when "bigquery" %} ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER)
+      {%- else %} ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))  and dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim}))
+      {%- endcase %}
+
+      {%- else %}
+
       or
       {%- case '@{database_type}' -%}
       {%- when "bigquery" %} ${event_date_tz_convert} between date_add(date_add(${start_date_dim}, interval -{{ _range_start }} DAY), interval -{{ i | minus: 1}} QUARTER)  and date_add(last_day(date_add(date_add(${end_date_dim}, interval -{{ _range_end }} DAY), interval -{{ i | minus: 1}} QUARTER),QUARTER),86399,second)
       {%- else %} ${event_date_tz_convert} between dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_start }}, ${start_date_dim}))  and dateadd('second', 86399, last_day(dateadd('quarters', -{{ i | minus: 1}}, dateadd('days', -{{ _range_end }}, ${end_date_dim})), 'quarter'))
+      {%- endcase %}
+
       {%- endcase %}
 
       {%- when 'prior_year' %}
