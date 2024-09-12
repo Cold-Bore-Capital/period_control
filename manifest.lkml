@@ -17,13 +17,13 @@ constant: time_display_format {
 }
 
 constant: days_in_standard_month {
-  # Set the number of days in a month.
+  # Set the number of days in a month. Only used to check if number of trailing days is not above this value if "Compare To" = Prior Month
   value: "30"
   export: override_optional
 }
 
 constant: days_in_standard_quarter {
-  # Set the number of days in a quarter.
+  # Set the number of days in a quarter. Only used to check if number of trailing days is not above this value if "Compare To" = Prior Quarter
   value: "91"
   export: override_optional
 }

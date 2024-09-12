@@ -102,7 +102,6 @@ Copy and paste the following template into the file, updating the fields as spec
     # Important. If this field only contains a date, with no time, this must be set to no. You will have major problems
     # if a date such as 2022-01-01 is converted to local time. Looker will think of this as 2022-01-01 00:00:00 and in the case
     # of a -5 conversion, would turn that into 2021-12-31 19:00:00.
-    convert_tz: no
 
     # --- Do Not Edit Below this Line ----
     type: date_raw
@@ -172,7 +171,6 @@ Copy and paste the following template into the file, updating the fields as spec
     # Important. If this field only contains a date, with no time, this must be set to no. You will have major problems
     # if a date such as 2022-01-01 is converted to local time. Looker will think of this as 2022-01-01 00:00:00 and in the case
     # of a -5 conversion, would turn that into 2021-12-31 19:00:00.
-    convert_tz: no
 
     # --- Do Not Edit Below this Line ----
     type: date_raw
@@ -296,7 +294,7 @@ The `As Of Date` filter allows you to select a specific date to use as the end o
 ##### Compare To
 The `Compare To` filter allows you to select a period to compare the current period to. For example, if you have a tile that displays revenue by week, you can select `Prior Week` to compare the current week to last week. Options exist for trailing, prior week, month, quarter, or year.
 
-**Important Note about Month and Quarter "Compare To":** Because each month and quarter can have a different number of days, month and quarter comparisons are standardized to a set number of days set by the `days_in_standard_month` and `days_in_standard_quarter` constants. By default, these are set to 30 days for month, and 91 days for a quarter.
+**Important Note about Month and Quarter "Compare To":** Keep in mind that each month and quarter can have a different number of days, month and quarter comparisons are not standardized to a set number of days. Constants that were present in a previous version (`days_in_standard_month` and `days_in_standard_quarter`) are removed.
 
 ##### Exclude Days
 Exclude days allows you to start your data from a specific point. Option are:
